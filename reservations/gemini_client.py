@@ -15,7 +15,7 @@ import os
 from google import genai
 from google.genai import types as genai_types
 from mcp import ClientSession
-from mcp.client.streamable_http import streamablehttp_client
+from mcp.client.streamable_http import streamable_http_client
 from dotenv import load_dotenv
 
 # Load .env file for API key
@@ -56,7 +56,7 @@ async def run_agent(user_query: str) -> None:
 
     client = genai.Client(api_key=api_key)
 
-    async with streamablehttp_client(MCP_SERVER_URL) as (read, write, _):
+    async with streamable_http_client(MCP_SERVER_URL) as (read, write, _):
         async with ClientSession(read, write) as session:
             await session.initialize()
 
