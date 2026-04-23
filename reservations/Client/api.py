@@ -16,7 +16,7 @@ from fastapi.responses import StreamingResponse
 from langchain_core.messages import AIMessage, HumanMessage
 from pydantic import BaseModel
 
-from graph import create_agent
+from Graph.graph import create_agent
 
 
 @asynccontextmanager

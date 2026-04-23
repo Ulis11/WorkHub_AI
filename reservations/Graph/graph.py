@@ -34,7 +34,7 @@ from langchain_mcp_adapters.client import MultiServerMCPClient
 from langgraph.graph import END, START, StateGraph
 from langgraph.prebuilt import ToolNode
 
-from nodes import AgentState, make_call_model_node, should_continue
+from .nodes import AgentState, make_call_model_node, should_continue
 
 load_dotenv()
 
