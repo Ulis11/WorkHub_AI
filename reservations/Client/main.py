@@ -11,7 +11,7 @@ import asyncio
 
 from langchain_core.messages import AIMessage, HumanMessage
 
-from graph import create_agent
+from Graph.graph import create_agent
 
 
 async def run(query: str) -> None:
