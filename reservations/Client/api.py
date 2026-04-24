@@ -10,10 +10,11 @@ Usage:
 """
 
 from contextlib import asynccontextmanager
+from datetime import date
 
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
-from langchain_core.messages import AIMessage, HumanMessage
+from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from pydantic import BaseModel
 
 from Graph.graph import create_agent
@@ -32,12 +33,18 @@ app = FastAPI(lifespan=lifespan)
 
 class SuggestRequest(BaseModel):
     query: str
+    user_id: int
+    today: date | None = None  # user's local date; falls back to server date if omitted
 
 
 @app.post("/suggest")
 async def suggest(request: SuggestRequest):
+    today = request.today or date.today()
+    context = SystemMessage(
+        content=f"The current user ID is {request.user_id}. Today's date is {today.isoformat()}."
+    )
     result = await app.state.agent.ainvoke(
-        {"messages": [HumanMessage(content=request.query)]}
+        {"messages": [context, HumanMessage(content=request.query)]}
     )
     ai_messages = [m for m in result["messages"] if isinstance(m, AIMessage)]
     final_message = ai_messages[-1]
@@ -55,9 +62,14 @@ async def suggest_stream(request: SuggestRequest):
     Streams the final LLM response token-by-token as plain text.
     Tool-call intermediate steps are silent; only the final answer is streamed.
     """
+    today = request.today or date.today()
+    context = SystemMessage(
+        content=f"The current user ID is {request.user_id}. Today's date is {today.isoformat()}."
+    )
+
     async def token_generator():
         async for event in app.state.agent.astream_events(
-            {"messages": [HumanMessage(content=request.query)]},
+            {"messages": [context, HumanMessage(content=request.query)]},
             version="v2",
         ):
             kind = event["event"]
