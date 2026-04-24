@@ -84,7 +84,7 @@ async def suggest_stream(request: SuggestRequest):
             chunk_content = event["data"]["chunk"].content
             if not chunk_content:
                 continue
-            # Gemini may return a list of content blocks
+            # Some models return a list of content blocks
             if isinstance(chunk_content, list):
                 chunk_content = "".join(
                     block.get("text", "")
