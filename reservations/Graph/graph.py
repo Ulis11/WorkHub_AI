@@ -38,8 +38,8 @@ from .nodes import AgentState, make_call_model_node, should_continue
 
 load_dotenv()
 
-MCP_SERVER_URL = "http://127.0.0.1:8000/mcp"
-GEMINI_MODEL = "gemini-3.1-flash-lite-preview"  # Change to any model supported by langchain-google-genai
+MCP_SERVER_URL = os.getenv("MCP_SERVER_URL", "http://127.0.0.1:8000/mcp")
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.1-flash-lite-preview")
 
 
 def build_graph(tools: list):
