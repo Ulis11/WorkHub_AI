@@ -29,7 +29,7 @@ from contextlib import asynccontextmanager
 from typing import AsyncIterator
 
 from dotenv import load_dotenv
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_anthropic import ChatAnthropic
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from langgraph.graph import END, START, StateGraph
 from langgraph.prebuilt import ToolNode
@@ -39,7 +39,7 @@ from .nodes import AgentState, make_call_model_node, should_continue
 load_dotenv()
 
 MCP_SERVER_URL = os.getenv("MCP_SERVER_URL", "http://127.0.0.1:8000/mcp")
-GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.1-flash-lite-preview")
+CLAUDE_MODEL = os.getenv("CLAUDE_MODEL", "claude-3-5-haiku-20241022")
 
 
 def build_graph(tools: list):
@@ -51,9 +51,10 @@ def build_graph(tools: list):
     2. Wrap the raw tool list in LangGraph's ToolNode for automatic execution.
     3. Wire call_model → should_continue → (call_tools | END) → call_model.
     """
-    llm = ChatGoogleGenerativeAI(
-        model=GEMINI_MODEL,
-        google_api_key=os.getenv("GEMINI_API_KEY"),
+    api_key = os.getenv("ANTHROPIC_API_KEY") or os.getenv("CLAUDE_API_KEY")
+    llm = ChatAnthropic(
+        model=CLAUDE_MODEL,
+        **({"api_key": api_key} if api_key else {}),
     )
     llm_with_tools = llm.bind_tools(tools)
 
