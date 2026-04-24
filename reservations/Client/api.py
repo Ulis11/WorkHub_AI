@@ -5,8 +5,6 @@ Exposes:
   POST /suggest         { "query": "..." }  →  { "result": "..." }
   POST /suggest/stream  { "query": "..." }  →  text/plain chunked stream
 
-Usage:
-    uvicorn api:app --reload --port 8001
 """
 
 from contextlib import asynccontextmanager

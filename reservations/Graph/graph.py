@@ -1,5 +1,5 @@
 """
-LangGraph weather agent graph.
+LangGraph WorkHub agent graph.
 
 Responsibilities:
   - Connect to the MCP server via MultiServerMCPClient

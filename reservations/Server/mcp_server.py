@@ -1,15 +1,18 @@
 import json
 import re
+import os
+from dotenv import load_dotenv
 from typing import Any
 
 import httpx
 from mcp.server.fastmcp import FastMCP
 
+load_dotenv()
 # Initialize FastMCP server
 mcp = FastMCP("workhub", json_response=True)
 
 # Constants
-WORKHUB_API_BASE = "http://localhost:5500/api"
+WORKHUB_API_BASE = os.getenv("WORKHUB_API_BASE")
 
 # Patterns that resemble LLM instruction syntax — stripped from API responses
 # to prevent indirect prompt injection via user-controlled data fields.
