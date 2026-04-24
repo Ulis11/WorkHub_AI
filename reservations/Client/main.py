@@ -2,9 +2,9 @@
 Entry point for the LangGraph weather agent.
 
 Usage:
-    1. Start the MCP server:  python mcp_server.py
+    1. Start the MCP server:  uv run .\Server\mcp_server.py
     2. Set your API key:      $env:GEMINI_API_KEY = "your-key"  (or use .env)
-    3. Run this agent:        python main.py
+    3. Run this agent:        uv run uvicorn Client.api:app --reload --port 8001
 """
 
 import asyncio

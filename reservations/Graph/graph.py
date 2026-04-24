@@ -92,7 +92,7 @@ async def create_agent() -> AsyncIterator:
     """
     client = MultiServerMCPClient(
         {
-            "weather": {
+            "workhub": {
                 "transport": "streamable_http",
                 "url": MCP_SERVER_URL,
             }
