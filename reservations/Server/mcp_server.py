@@ -5,11 +5,12 @@ from dotenv import load_dotenv
 from typing import Any
 
 import httpx
+import uvicorn
 from mcp.server.fastmcp import FastMCP
 
 load_dotenv()
 # Initialize FastMCP server
-mcp = FastMCP("workhub", json_response=True)
+mcp = FastMCP("workhub", json_response=True, stateless_http=True, host="0.0.0.0")
 
 # Constants
 WORKHUB_API_BASE = os.getenv("WORKHUB_API_BASE")
@@ -203,7 +204,7 @@ async def get_reservation_history(user_id: int) -> Any:
 def main():
     # Render (and most PaaS) assigns a PORT env var; fall back to 8000 locally.
     port = int(os.getenv("PORT", 8000))
-    mcp.run(transport="streamable-http", host="0.0.0.0", port=port)
+    uvicorn.run(mcp.streamable_http_app(), host="0.0.0.0", port=port)
 
 if __name__ == "__main__":
     main()

@@ -102,6 +102,7 @@ async def create_agent() -> AsyncIterator:
             "workhub": {
                 "transport": "streamable_http",
                 "url": MCP_SERVER_URL,
+                "terminate_on_close": False,
             }
         }
     )
