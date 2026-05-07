@@ -3,11 +3,16 @@
 #   1. workhub-mcp  — FastMCP tool server (deploy this first)
 #   2. workhub-agent — LangGraph / FastAPI agent
 #
+# IMPORTANT: render.yaml must live at the repo root (next to the reservations/ folder).
+# rootDir tells Render to treat reservations/ as the working directory for each service,
+# so all commands and paths are relative to it.
+#
 # Deploy order:
-#   1. Push to GitHub and connect the repo on render.com.
-#   2. Deploy workhub-mcp first; copy its public URL (e.g. https://workhub-mcp.onrender.com).
-#   3. Set MCP_SERVER_URL=https://workhub-mcp.onrender.com/mcp on workhub-agent.
-#   4. Deploy workhub-agent.
+#   1. Move render.yaml to the repo root if it isn't already there.
+#   2. Push to GitHub and connect the repo on render.com.
+#   3. Deploy workhub-mcp first; copy its public URL (e.g. https://workhub-mcp.onrender.com).
+#   4. Set MCP_SERVER_URL=https://workhub-mcp.onrender.com/mcp on workhub-agent.
+#   5. Deploy workhub-agent.
 
 services:
   # ── 1. MCP Tool Server ──────────────────────────────────────────────────────
@@ -16,6 +21,7 @@ services:
     runtime: python
     region: oregon
     plan: free
+    rootDir: reservations
     buildCommand: pip install uv && uv sync --no-dev
     startCommand: uv run python Server/mcp_server.py
     envVars:
@@ -29,13 +35,14 @@ services:
     runtime: python
     region: oregon
     plan: free
+    rootDir: reservations
     buildCommand: pip install uv && uv sync --no-dev
     startCommand: uv run uvicorn Client.api:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: GOOGLE_API_KEY
         sync: false   # set manually in the Render dashboard
       - key: GEMINI_MODEL
-        value: gemini-2.0-flash-lite
+        value: gemini-3.1-flash-lite-preview
       # After deploying workhub-mcp, set this to its public /mcp URL.
       - key: MCP_SERVER_URL
         sync: false   # e.g. https://workhub-mcp.onrender.com/mcp
