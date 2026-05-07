@@ -201,8 +201,9 @@ async def get_reservation_history(user_id: int) -> Any:
 
 # Main entry point / server startup
 def main():
-    # Initialize and run the server
-    mcp.run(transport="streamable-http")
+    # Render (and most PaaS) assigns a PORT env var; fall back to 8000 locally.
+    port = int(os.getenv("PORT", 8000))
+    mcp.run(transport="streamable-http", host="0.0.0.0", port=port)
 
 if __name__ == "__main__":
     main()

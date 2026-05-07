@@ -1,0 +1,41 @@
+# Render infrastructure-as-code for the WorkHub AI backend.
+# Two web services are needed:
+#   1. workhub-mcp  — FastMCP tool server (deploy this first)
+#   2. workhub-agent — LangGraph / FastAPI agent
+#
+# Deploy order:
+#   1. Push to GitHub and connect the repo on render.com.
+#   2. Deploy workhub-mcp first; copy its public URL (e.g. https://workhub-mcp.onrender.com).
+#   3. Set MCP_SERVER_URL=https://workhub-mcp.onrender.com/mcp on workhub-agent.
+#   4. Deploy workhub-agent.
+
+services:
+  # ── 1. MCP Tool Server ──────────────────────────────────────────────────────
+  - type: web
+    name: workhub-mcp
+    runtime: python
+    region: oregon
+    plan: free
+    buildCommand: pip install uv && uv sync --no-dev
+    startCommand: uv run python Server/mcp_server.py
+    envVars:
+      # URL of your deployed WorkHub REST API (not localhost).
+      - key: WORKHUB_API_BASE
+        sync: false   # set manually in the Render dashboard
+
+  # ── 2. FastAPI Agent ────────────────────────────────────────────────────────
+  - type: web
+    name: workhub-agent
+    runtime: python
+    region: oregon
+    plan: free
+    buildCommand: pip install uv && uv sync --no-dev
+    startCommand: uv run uvicorn Client.api:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: GOOGLE_API_KEY
+        sync: false   # set manually in the Render dashboard
+      - key: GEMINI_MODEL
+        value: gemini-2.0-flash-lite
+      # After deploying workhub-mcp, set this to its public /mcp URL.
+      - key: MCP_SERVER_URL
+        sync: false   # e.g. https://workhub-mcp.onrender.com/mcp
