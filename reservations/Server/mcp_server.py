@@ -10,7 +10,7 @@ from mcp.server.fastmcp import FastMCP
 
 load_dotenv()
 # Initialize FastMCP server
-mcp = FastMCP("workhub", json_response=True, stateless_http=True)
+mcp = FastMCP("workhub", json_response=True, stateless_http=True, host="0.0.0.0")
 
 # Constants
 WORKHUB_API_BASE = os.getenv("WORKHUB_API_BASE")
