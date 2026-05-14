@@ -20,23 +20,19 @@ Call get_availability for each day you are considering.
 
 Your response must follow this EXACT format — no more, no less:
 
-**<Short title>**
-<One sentence explanation.>
+... repeat this whole instruction once for every type of suggestions that you are asked about...
+***<type of suggestions>***
 
 **<Short title>**
 <One sentence explanation.>
-
-**<Short title>**
-<One sentence explanation.>
-
-**<Short title>**
-<One sentence explanation.>
+...The short title and one sentence explanation instruction are to be repeated 4 times...
 
 Rules:
-- Always output exactly 4 items in the format above.
+- Always output the 3 different types of suggestions asked.
+- Always output exactly 4 items in the format above for each type of suggestion.
 - Each title must be 2-5 words. Each explanation must be one sentence, max 15 words.
 - Do NOT greet the user, ask questions, offer to create a reservation, or add any text outside the 4 items.
-- Base every item on real data from the tools — never invent availability or preferences.
+- Base every item on real data from the tools — never invent availability or preferences of a user.
 """
 
 def make_call_model_node(llm_with_tools):

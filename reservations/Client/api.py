@@ -12,6 +12,7 @@ from datetime import date
 
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
+from fastapi.middleware.cors import CORSMiddleware
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from pydantic import BaseModel
 
@@ -28,6 +29,20 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+origins = [
+    "http://localhost:5173",  # Si usas Vite
+    "http://localhost:5500",  # La API del backend
+    "http://127.0.0.1:8000",  # También incluye 127.0.0.1
+    "http://127.0.0.1:8001"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,  # Orígenes permitidos
+    allow_credentials=True,
+    allow_methods=["*"],     # Permite todos los métodos (GET, POST, etc.)
+    allow_headers=["*"],     # Permite todos los headers
+)
 
 class SuggestRequest(BaseModel):
     query: str
