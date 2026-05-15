@@ -7,11 +7,14 @@ Exposes:
 
 """
 
+import os
 from contextlib import asynccontextmanager
 from datetime import date
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
+from fastapi.middleware.cors import CORSMiddleware
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from pydantic import BaseModel
 
@@ -27,6 +30,15 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://coruscating-naiad-2204fb.netlify.app"],
+    allow_origin_regex=r"http://(localhost|127\.0\.0\.1)(:\d+)?" if os.getenv("DEV") else None,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    allow_credentials=True,
+)
 
 
 class SuggestRequest(BaseModel):
