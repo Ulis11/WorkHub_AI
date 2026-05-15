@@ -206,15 +206,17 @@ def main():
     # Render (and most PaaS) assigns a PORT env var; fall back to 8000 locally.
     port = int(os.getenv("PORT", 8000))
     app = mcp.streamable_http_app()
+    _origins = ["https://coruscating-naiad-2204fb.netlify.app"]
     if os.getenv("DEV"):
         print("MCP Server running in development mode with CORS enabled")
-        app = CORSMiddleware(
-            app,
-            allow_origins=["http://localhost:5173", "http://127.0.0.1"],
-            allow_origin_regex=r"http://(localhost|127\.0\.0\.1)(:\d+)?",
-            allow_methods=["*"],
-            allow_headers=["*"],
-        )
+        _origins += ["http://localhost:5173", "http://127.0.0.1"]
+    app = CORSMiddleware(
+        app,
+        allow_origins=_origins,
+        allow_origin_regex=r"http://(localhost|127\.0\.0\.1)(:\d+)?" if os.getenv("DEV") else None,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
     uvicorn.run(app, host="0.0.0.0", port=port)
 
 if __name__ == "__main__":

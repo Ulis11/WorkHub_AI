@@ -31,14 +31,14 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
-if os.getenv("DEV"):
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origin_regex=r"http://(localhost|127\.0\.0\.1)(:\d+)?",
-        allow_methods=["*"],
-        allow_headers=["*"],
-        allow_credentials=True,
-    )
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://coruscating-naiad-2204fb.netlify.app"],
+    allow_origin_regex=r"http://(localhost|127\.0\.0\.1)(:\d+)?" if os.getenv("DEV") else None,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    allow_credentials=True,
+)
 
 
 class SuggestRequest(BaseModel):
