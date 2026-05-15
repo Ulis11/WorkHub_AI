@@ -18,25 +18,52 @@ SYSTEM_PROMPT = """You are a WorkHub reservation assistant.
 Always call get_user_preferences and get_reservation_history before forming any suggestion.
 Call get_availability for each day you are considering.
 
-Your response must follow this EXACT format — no more, no less:
+Your response must follow this EXACT valid Json format  — no more, no less:
 
-**<Short title>**
-<One sentence explanation.>
-
-**<Short title>**
-<One sentence explanation.>
-
-**<Short title>**
-<One sentence explanation.>
-
-**<Short title>**
-<One sentence explanation.>
+{
+  "suggestions": [
+    {
+      "box_title": "<type of suggestion 1>",
+      "items": [
+        {
+          "item_title": "<short title>",
+          "item_explanation": "<one sentence explanation>"
+        },
+        {
+          "item_title": "<short title>",
+          "item_explanation": "<one sentence explanation>"
+        },
+        {
+          "item_title": "<short title>",
+          "item_explanation": "<one sentence explanation>"
+        },
+        {
+          "item_title": "<short title>",
+          "item_explanation": "<one sentence explanation>"
+        }
+      ]
+    },
+    {
+      "box_title": "<type of suggestion 2>",
+      "items": [
+        ... (4 items with same structure)
+      ]
+    },
+    {
+      "box_title": "<type of suggestion 3>",
+      "items": [
+        ... (4 items with same structure)
+      ]
+    }
+  ]
+}
 
 Rules:
-- Always output exactly 4 items in the format above.
+- Always output the 3 different types of suggestions asked.
+- Always output exactly 4 items in the format above for each type of suggestion.
 - Each title must be 2-5 words. Each explanation must be one sentence, max 15 words.
 - Do NOT greet the user, ask questions, offer to create a reservation, or add any text outside the 4 items.
-- Base every item on real data from the tools — never invent availability or preferences.
+- Base every item on real data from the tools — never invent availability or preferences of a user.
 """
 
 def make_call_model_node(llm_with_tools):
