@@ -40,6 +40,8 @@ from .nodes import AgentState, make_call_model_node, should_continue
 load_dotenv()
 
 MCP_SERVER_URL = os.getenv("MCP_SERVER_URL", "http://127.0.0.1:8000/mcp")
+TOMTOM_API_KEY = os.getenv("TOMTOM_API_KEY")           # TomTom Developer — Live Traffic tools
+TOMTOM_MOVE_PORTAL_KEY = os.getenv("TOMTOM_MOVE_PORTAL_KEY")  # MOVE Portal — Area/Junction/Route tools
 # CLAUDE_MODEL = os.getenv("CLAUDE_MODEL", "claude-3-5-haiku-20241022")
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.1-flash-lite-preview")
 
@@ -97,15 +99,27 @@ async def create_agent() -> AsyncIterator:
         async with create_agent() as agent:
             result = await agent.ainvoke({"messages": [HumanMessage(content=query)]})
     """
-    client = MultiServerMCPClient(
-        {
+    servers = {
             "workhub": {
                 "transport": "streamable_http",
                 "url": MCP_SERVER_URL,
                 "terminate_on_close": False,
             }
         }
-    )
+    if TOMTOM_API_KEY or TOMTOM_MOVE_PORTAL_KEY:
+        print("TomTom detected adding MCP server")
+        tomtom_env = {}
+        if TOMTOM_API_KEY:
+            tomtom_env["TOMTOM_API_KEY"] = TOMTOM_API_KEY
+        if TOMTOM_MOVE_PORTAL_KEY:
+            tomtom_env["TOMTOM_MOVE_PORTAL_KEY"] = TOMTOM_MOVE_PORTAL_KEY
+        servers["tomtom"] = {
+            "transport": "stdio",
+            "command": "npx.cmd" if os.name == "nt" else "npx",
+            "args": ["-y", "@tomtom-org/tomtom-traffic-analytics-mcp"],
+            "env": tomtom_env,
+        }
+    client = MultiServerMCPClient(servers)
     tools = await client.get_tools()
     print(f"Loaded {len(tools)} MCP tool(s): {[t.name for t in tools]}\n")
     yield build_graph(tools)
