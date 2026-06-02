@@ -74,7 +74,6 @@ async def get_user_preferences(id: int) -> Any:
     - preferred_days: list of days they prefer to come in (e.g. ['lunes', 'miercoles'])
     - usual_arrival_time: what time they usually arrive (e.g. '09:00')
     - usual_leave_time: what time they usually leave (e.g. '18:00')
-    - transport_mode: how they commute ('carro', 'transporte_publico', 'bicicleta', 'a pie')
     - nombre: user's first name — use this to personalize the response greeting
     - apellido: user's last name
     
