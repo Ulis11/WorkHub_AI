@@ -59,6 +59,36 @@ def _derive_traffic_condition(intervals: list[SpeedInterval]) -> str:
     return "light"
 
 
+def _make_bbox(lat: float, lng: float, delta: float = 0.015) -> str:
+    """Return a TomTom bbox string: minLon,minLat,maxLon,maxLat (no spaces)."""
+    return f"{lng - delta:.6f},{lat - delta:.6f},{lng + delta:.6f},{lat + delta:.6f}"
+
+
+def _build_commute_bbox_message(origin: "Location | None", destination: "Location | None") -> str:
+    """
+    Pre-compute bbox strings for tomtom-traffic-incidents so the LLM never
+    has to do floating-point arithmetic (which produces regex-breaking strings).
+    """
+    lines = [
+        "Pre-computed bboxes for tomtom-traffic-incidents (minLon,minLat,maxLon,maxLat):",
+        "Call the tool with the bboxes array exactly as shown below — copy the strings verbatim.",
+        "",
+        "bboxes: [",
+    ]
+    bboxes = []
+    if origin is not None:
+        bboxes.append(f'  {{"name": "Origin", "bbox": "{_make_bbox(origin.lat, origin.lng)}"}}')
+    if origin is not None and destination is not None:
+        mid_lat = (origin.lat + destination.lat) / 2
+        mid_lng = (origin.lng + destination.lng) / 2
+        bboxes.append(f'  {{"name": "Midpoint", "bbox": "{_make_bbox(mid_lat, mid_lng)}"}}')
+    if destination is not None:
+        bboxes.append(f'  {{"name": "Destination", "bbox": "{_make_bbox(destination.lat, destination.lng)}"}}')
+    lines.append(",\n".join(bboxes))
+    lines.append("]")
+    return "\n".join(lines)
+
+
 def _build_traffic_message(route: RouteObject) -> str:
     """Format a RouteObject into a concise system message for the LLM."""
     duration_min = round(route.durationMillis / 60000) if route.durationMillis is not None else None
@@ -111,11 +141,18 @@ app.add_middleware(
 )
 
 
+class Location(BaseModel):
+    lat: float
+    lng: float
+
+
 class SuggestRequest(BaseModel):
     query: str
     user_id: int
-    today: date | None = None    # user's local date; falls back to server date if omitted
-    route: RouteObject | None = None  # Google Routes API response for the user's commute
+    today: date | None = None      # user's local date; falls back to server date if omitted
+    route: RouteObject | None = None   # Google Routes API response for the user's commute
+    origin: Location | None = None     # user's current location (start of commute)
+    destination: Location | None = None  # office location (end of commute)
 
 
 def _build_messages(request: SuggestRequest):
@@ -128,6 +165,8 @@ def _build_messages(request: SuggestRequest):
     ]
     if request.route is not None:
         messages.append(SystemMessage(content=_build_traffic_message(request.route)))
+    if request.origin is not None or request.destination is not None:
+        messages.append(SystemMessage(content=_build_commute_bbox_message(request.origin, request.destination)))
     messages.append(HumanMessage(content=request.query))
     return messages
 

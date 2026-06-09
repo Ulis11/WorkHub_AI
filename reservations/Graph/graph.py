@@ -119,7 +119,18 @@ async def create_agent() -> AsyncIterator:
             "args": ["-y", "@tomtom-org/tomtom-traffic-analytics-mcp"],
             "env": tomtom_env,
         }
+    # Tools that require the MOVE Portal key — exclude them when the key is absent
+    _MOVE_PORTAL_TOOLS = {
+        "tomtom-area-analytics-stats",
+        "tomtom-junction-search",
+        "tomtom-junction-live-data",
+        "tomtom-junction-archive",
+        "tomtom-route-search",
+        "tomtom-route-monitoring-details",
+    }
     client = MultiServerMCPClient(servers)
     tools = await client.get_tools()
+    if not TOMTOM_MOVE_PORTAL_KEY:
+        tools = [t for t in tools if t.name not in _MOVE_PORTAL_TOOLS]
     print(f"Loaded {len(tools)} MCP tool(s): {[t.name for t in tools]}\n")
     yield build_graph(tools)

@@ -97,10 +97,11 @@ async def get_user_preferences(id: int) -> Any:
     return json.dumps(_sanitize(data))
 
 @mcp.tool()
-async def get_availability(date: str) -> Any:
+async def get_availability(date: str, zona: int, horaInicio: str | None = None, horaFin: str | None = None) -> Any:
     """
-    Returns all available and active spaces for a given date,
+    Returns the availability of spaces for a given date and zone,
     excluding any spaces that already have a confirmed reservation.
+    Optionally filters by a time window if horaInicio and horaFin are provided.
     
     WHEN TO CALL:
     - Call this for every day you are considering suggesting to the user.
@@ -112,7 +113,10 @@ async def get_availability(date: str) -> Any:
       so you can filter results meaningfully.
     
     PARAMETERS:
-    - date: the date to check in YYYY-MM-DD format (e.g. '2026-04-28')
+    - date: the date to check in YYYY-MM-DD format (e.g. '2026-04-28') [required]
+    - zona: zone ID (integer) to filter spaces by [required]
+    - horaInicio: start of the time window in HH:MM format (e.g. '08:00') [optional, requires horaFin]
+    - horaFin: end of the time window in HH:MM format (e.g. '10:00') [optional, requires horaInicio]
     
     WHAT IT RETURNS:
     A list of available spaces, each containing:
@@ -125,8 +129,6 @@ async def get_availability(date: str) -> Any:
     - edificio: building name
     
     WHAT TO DO WITH RESULTS:
-    - Filter by preferred_zone from get_user_preferences to find spaces
-      the user will actually enjoy.
     - Filter by preferred_space_type from get_user_preferences or from
       patterns found in get_reservation_history.
     - If no spaces match the user's preferences on a given day, flag this
@@ -135,7 +137,7 @@ async def get_availability(date: str) -> Any:
     
     RELATIONSHIP TO OTHER TOOLS:
     - Always call get_user_preferences before this so you know which
-      zone and space type to prioritize in the results.
+      zone ID and space type to prioritize in the results.
     - Always call get_reservation_history before this so you know which
       specific spaces and zones the user gravitates toward historically.
     - These three tools together form the complete reasoning chain —
@@ -144,8 +146,14 @@ async def get_availability(date: str) -> Any:
 
     Args:
         date: Date in YYYY-MM-DD format
+        zona: Zone ID (integer)
+        horaInicio: Optional start time in HH:MM format (requires horaFin)
+        horaFin: Optional end time in HH:MM format (requires horaInicio)
     """
-    data = await make_workhub_request(f"reservas/disponibilidad?date={date}")
+    params = f"date={date}&zona={zona}"
+    if horaInicio and horaFin:
+        params += f"&horaInicio={horaInicio}&horaFin={horaFin}"
+    data = await make_workhub_request(f"reservas/disponibilidad?{params}")
     if not data:
         return "Unable to fetch availability data."
 
