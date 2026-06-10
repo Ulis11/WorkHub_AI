@@ -91,7 +91,7 @@ Return ONLY this JSON — no other keys:
 ── MODE B: Traffic data present (commute data OR bboxes injected) ──
 Return ONLY this JSON — no other keys:
 {
-  "traffic_suggestions": [
+  "suggestions": [
     {
       "box_title": "<traffic-related suggestion type 1>",
       "items": [
