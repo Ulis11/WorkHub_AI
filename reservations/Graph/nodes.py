@@ -93,7 +93,7 @@ Return ONLY this JSON — no other keys:
 {
   "traffic_suggestions": [
     {
-      "box_title": "<traffic-related suggestion type>",
+      "box_title": "<traffic-related suggestion type 1>",
       "items": [
         {"item_title": "<short title>", "item_explanation": "<one sentence explanation>"},
         {"item_title": "<short title>", "item_explanation": "<one sentence explanation>"},
@@ -102,7 +102,7 @@ Return ONLY this JSON — no other keys:
       ]
     },
     {
-      "box_title": "<traffic-related suggestion type>",
+      "box_title": "<traffic-related suggestion type 2>",
       "items": [
         {"item_title": "<short title>", "item_explanation": "<one sentence explanation>"},
         {"item_title": "<short title>", "item_explanation": "<one sentence explanation>"},
