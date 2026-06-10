@@ -46,3 +46,7 @@ services:
       # After deploying workhub-mcp, set this to its public /mcp URL.
       - key: MCP_SERVER_URL
         sync: false   # e.g. https://workhub-mcp.onrender.com/mcp
+      - key: TOMTOM_API_KEY
+        sync: false   # set manually in the Render dashboard
+      - key: TOMTOM_MOVE_PORTAL_KEY
+        sync: false   # leave blank if you don't have a MOVE Portal key
