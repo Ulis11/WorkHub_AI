@@ -118,6 +118,7 @@ TRAFFIC DATA (MODE B rules):
 - "Travel time with current traffic" (durationMillis → minutes) is the actual travel time now.
 - "Travel time without traffic" (staticDurationMillis → minutes) is the baseline.
 - The difference is the current delay — use it to judge severity.
+- If the actual travel time is less than the baseline, make comments about unusually light traffic and possible early arrival.
 - "Overall traffic condition": light = free-flowing, moderate = noticeable slowdowns, heavy = major jams.
 - All users commute by car — traffic data is always relevant when present.
 - Output exactly 2 boxes in traffic_suggestions, each with exactly 4 items:
