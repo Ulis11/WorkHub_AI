@@ -121,16 +121,18 @@ TRAFFIC DATA (MODE B rules):
 - "Overall traffic condition": light = free-flowing, moderate = noticeable slowdowns, heavy = major jams.
 - All users commute by car — traffic data is always relevant when present.
 - Output exactly 2 boxes in traffic_suggestions, each with exactly 4 items:
-  Box 1 — Commute summary:
-    Item 1: overall delay (travel time + delay minutes from Google Routes data)
-    Items 2-3: one item per notable incident — translated label, road name ("de <from> a <to>"
-      or roadNumber), and delay in minutes if available. If fewer than 2 incidents exist,
-      fill with the next most impactful incident or a specific timing observation.
-    Item 4: concrete route or timing suggestion — recommend a named alternate road from
-      the incident data (e.g. "Usa Av. X para evitar el cierre en Av. Y") or advise a
-      specific departure window (e.g. "Sal antes de las 8:30 para evitar el retraso").
-  Box 2 — Additional incidents or conditions:
-    4 more items covering remaining incidents or general commute advice based on real data.
+  Box 1 — Road incidents only (title should reflect the traffic condition, e.g. "Incidentes en ruta"):
+    All 4 items must be real incidents from TomTom — translated label, road name
+    ("de <from> a <to>" or roadNumber), and delay in minutes if available.
+    If fewer than 4 incidents exist, fill remaining items with the overall delay summary
+    (travel time + delay from Google Routes) or "Sin incidentes adicionales en la ruta".
+    NEVER include advice, suggestions, or recommendations in this box — only factual incidents.
+  Box 2 — Pre-commute recommendations (title e.g. "Antes de salir"):
+    4 actionable recommendations the user should do BEFORE leaving for the office,
+    based on the real traffic conditions found. Examples: check a specific road, leave
+    at a specific time, bring something, use a specific alternate route, park differently.
+    Ground each recommendation in the actual condition level and incidents found — do not
+    give generic advice unrelated to today's real traffic situation.
   NEVER use raw iconCategory enum values — always use the translated label.
 
 Rules:
