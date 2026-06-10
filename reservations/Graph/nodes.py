@@ -121,7 +121,7 @@ TRAFFIC DATA (MODE B rules):
 - "Overall traffic condition": light = free-flowing, moderate = noticeable slowdowns, heavy = major jams.
 - All users commute by car — traffic data is always relevant when present.
 - Output exactly 2 boxes in traffic_suggestions, each with exactly 4 items:
-  Box 1 — Road incidents only (title should reflect the traffic condition, e.g. "Incidentes en ruta"):
+  Box 1 — Road incidents only (title should reflect the traffic condition but shouldnt repeat, e.g. "Incidentes en ruta"):
     All 4 items must be real incidents from TomTom — translated label, road name
     ("de <from> a <to>" or roadNumber), and delay in minutes if available.
     If fewer than 4 incidents exist, fill remaining items with the overall delay summary
